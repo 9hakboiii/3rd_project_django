@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    {% block head %}
+    {% endblock head %}
+    <body class="bg-gray-50 font-sans">
+        {% block navi %}
+        {% endblock navi %}
+        {% block header %}
+        {% endblock header %}
+        <!-- 기본 템플릿 안에 삽입될 내용 Start -->
+        {% block content %}
+        {% endblock content %}
+        <!-- 기본 템플릿 안에 삽입될 내용 End -->
+        {% block footer %}
+        {% endblock footer %}
+        <!-- 자바스크립트 Start -->
+        {% block script %}
+        {% endblock script %}
+        <!-- 자바스크립트 End -->
+    </body>
+</html>
