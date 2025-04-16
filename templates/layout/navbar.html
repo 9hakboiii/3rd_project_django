@@ -6,11 +6,13 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0 flex items-center">
                     <i class="fab fa-youtube text-youtube text-3xl mr-2"></i>
-                    <span class="text-xl font-bold text-dark">Thumb<span class="text-youtube">Trend</span></span>
+                    <a class="navar-brand" href="{% url 'main:home' %}">
+                        <span class="text-xl font-bold text-dark">Thumb<span class="text-youtube">Trend</span></span>
+                    </a>
                 </div>
             </div>
             <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
-                <a href="#"
+                <a href="{% url 'main:home' %}"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Home</a>
                 <a href="#"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Trends</a>
