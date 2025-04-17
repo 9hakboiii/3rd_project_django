@@ -23,15 +23,19 @@
                 <div class="col-12 col-lg-10 col-xl-8">
                     <div class="row gy-5 justify-content-center">
                         <div class="col-12 col-lg-5">
-                            <form action="#!">
+                            <!--login_form-->
+                            <form method="post" action="{% url 'accounts:login_user' %}">
                                 <div class="row gy-3 overflow-hidden">
                                     <div class="col-12">
                                         <div class="form-floating mb-3">
-                                            <input type="id"
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="{{ next }}">
+                                            {% include "layout/form_errors.html" %}
+                                            <input type="text"
                                                    class="form-control border-0 border-bottom rounded-0"
-                                                   name="id"
-                                                   id="id"
-                                                   placeholder="name@example.com"
+                                                   name="username"
+                                                   id="username"
+                                                   placeholder="Your Id"
                                                    required>
                                             <label for="id" class="form-label">Id</label>
                                         </div>
@@ -43,7 +47,7 @@
                                                    name="password"
                                                    id="password"
                                                    value=""
-                                                   placeholder="Password"
+                                                   placeholder="Your Password"
                                                    required>
                                             <label for="password" class="form-label">Password</label>
                                         </div>
@@ -62,7 +66,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="text-end">
-                                                    <a href="#!" class="link-secondary text-decoration-none">Forgot password?</a>
+                                                    <a href="#!" class="link-secondary text-decoration-none">Don't have an account?</a>
                                                 </div>
                                             </div>
                                         </div>
