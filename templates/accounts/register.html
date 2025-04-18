@@ -1,0 +1,74 @@
+{% extends "layout/base.html" %}
+{% block head %}
+    {% include "accounts/head.html" %}
+{% endblock head %}
+{% block navi %}
+    {% include "layout/navbar.html" %}
+{% endblock navi %}
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0 text-center">회원가입</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% include 'layout/form_errors.html' %}
+                            <!-- 아이디 입력 -->
+                            <div class="form-outline mb-4">
+                                <label for="id_username" class="form-label"  name="username" id="username">아이디</label>
+                                {{ form.username }}
+                            </div>
+                            <!-- 비밀번호 입력 -->
+                            <div class="form-outline mb-4">
+                                <label for="id_password1" class="form-label" name="password1" id="password1">비밀번호</label>
+                                {{ form.password1 }}
+                            </div>
+                            <!-- 비밀번호 확인 -->
+                            <div class="form-outline mb-4">
+                                <label for="id_password2" class="form-label" name="password2" id="password2">비밀번호 확인</label>
+                                {{ form.password2 }}
+                            </div>
+                            <!-- 이메일 입력 -->
+                            <div class="form-outline mb-4">
+                                <label for="id_email" class="form-label" name="email" id="email">이메일</label>
+                                {{ form.email }}
+                            </div>
+                            <!--직업 선택-->
+                            <div class="form-outline mb-4">
+                                <label for="id_job" class="form-label" name="job" id="job">직업</label>
+                                {{ form.job }}
+                            </div>
+                            <!--성별 선택-->
+                            <div class="form-outline mb-4">
+                                <label for="id_gender" class="form-label" name="gender" id="gender">성별</label>
+                                {{ form.gender }}
+                            </div>
+                            <!-- 약관 동의 체크박스 -->
+                            <div class="form-check d-flex justify-content-center mb-4">
+                                <input class="form-check-input me-2"
+                                       type="checkbox"
+                                       value=""
+                                       id="registerCheck"
+                                       required />
+                                <label class="form-check-label" for="registerCheck">이용약관에 동의합니다</label>
+                            </div>
+                            <!-- 제출 버튼 -->
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-danger text-white w-100 mb-3">가입하기</button>
+                            </div>
+                            <div class="text-center">
+                                <p>
+                                    이미 계정이 있으신가요? <a href="{% url 'accounts:login_user' %}">로그인</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
