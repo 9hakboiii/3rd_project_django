@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <form method="post">
                                 {% csrf_token %}
-                                {% include 'layout/form_errors.html' %}
+                                {% comment %} {% include 'layout/form_errors.html' %} {% endcomment %}
                                 <!-- 아이디 입력 -->
                                 <div class="form-outline mb-4">
                                     <label for="id_username" class="form-label"  name="username" id="username">아이디</label>
