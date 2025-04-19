@@ -30,7 +30,6 @@
                                         <div class="form-floating mb-3">
                                             {% csrf_token %}
                                             {% comment %} <input type="hidden" name="next" value="{{ next }}"> {% endcomment %}
-                                            {% include "layout/form_errors.html" %}
                                             <input type="text"
                                                    class="form-control border-0 border-bottom rounded-0"
                                                    name="username"
