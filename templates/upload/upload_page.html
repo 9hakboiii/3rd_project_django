@@ -39,27 +39,35 @@
                         <div class="card shadow">
                             <div class="card-body p-4">
                                 <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-link"></i>
-                                    </span>
-                                    <form method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <button id="uploadBtn"
-                                                class="btn btn-primary btn-lg btn-upload"
-                                                type="submit">
-                                            <i class="fas fa-upload me-2"></i>Upload
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="row">
-                                    {% for content in contents %}
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card">
-                                                <img src="{{ content.url_image.url }}" class="card-img-top" alt="업로드된 이미지">
+                                    <!--uploaded_image_section-->
+                                    {% if last_uploaded_image %}
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <img src="{{ last_uploaded_image.url_image.url }}"
+                                                         alt="업로드된 이미지"
+                                                         class="card-image-top ">
+                                                </div>
                                             </div>
                                         </div>
-                                    {% endfor %}
+                                    {% endif %}
+                                    {% comment %} <span class="input-group-text">
+                                        <i class="fas fa-link"></i>
+                                    </span> {% endcomment %}
+                                    <!--image_form-->
+                                    <div class="container text-center">
+                                        <form method="post"
+                                              enctype="multipart/form-data"
+                                              class="mt-3 d-flex justify-content-center">
+                                            {% csrf_token %}
+                                            {{ form.as_p }}
+                                            <button id="uploadBtn"
+                                                    class="btn btn-primary btn-lg btn-upload ml-2"
+                                                    type="submit">
+                                                <i class="fas fa-upload me-2"></i>Upload
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                                 <small class="text-datk-50">Enter a valid image URL (JPG, PNG, GIF, etc.)</small>
                             </div>
