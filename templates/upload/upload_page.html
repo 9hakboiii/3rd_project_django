@@ -1,0 +1,166 @@
+{% extends 'layout/base.html' %}
+{% block head %}
+    {% include "upload/head.html" %}
+{% endblock head %}
+{% block navi %}
+    {% include "layout/navbar.html" %}
+    <div class="d-flex flex-column vh-100 justify-content-between">
+    {% endblock navi %}
+    {% block content %}
+        <!-- Hero Section -->
+        <section class="url_section py-5">
+            <div class="text-center py-4">
+                <h1 class="display-4 fw-bold mb-4">Upload Your Images Instantly</h1>
+                <p class="lead mb-5">Upload an image and check out the font of your text!</p>
+                <!-- Image Preview -->
+                <div class="row justify-content-center mb-4">
+                    <div class="col-md-8">
+                        <div id="previewContainer" class="d-none">
+                            <div class="card bg-white shadow">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Image Preview</h5>
+                                    <button id="closePreview" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body text-center p-4">
+                                    <img id="imagePreview"
+                                         src=""
+                                         alt="Preview"
+                                         class="img-fluid image-preview">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Upload Form -->
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-body p-4">
+                                <div class="input-group mb-3">
+                                    <!--uploaded_image_section-->
+                                    {% if last_uploaded_image %}
+                                        <div id="imageContainer">
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-4">
+                                                    <div class="card">
+                                                        <img src="{{ last_uploaded_image.url_image.url }}"
+                                                             alt="업로드된 이미지"
+                                                             class="card-image-top ">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% comment %} <span class="input-group-text">
+                                        <i class="fas fa-link"></i>
+                                    </span> {% endcomment %}
+                                    <!--image_form-->
+                                    <div class="container text-center">
+                                        <form method="post"
+                                              id="uploadForm"
+                                              enctype="multipart/form-data"
+                                              class="mt-3 d-flex justify-content-center">
+                                            {% csrf_token %}
+                                            {{ form.as_p }}
+                                            {% if not is_upload %}
+                                                <button id="uploadBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                        type="submit">
+                                                    <i class="fas fa-upload me-2"></i>Upload
+                                                </button>
+                                            {% else %}
+                                                <button id="analysisBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                        type="button">
+                                                    <i class="bi bi-search"></i>Analysis
+                                                </button>
+                                                <button id="initializeBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-3"
+                                                        type="button">
+                                                    <i class="bi bi-arrow-clockwise"></i>Initialize
+                                                </button>
+                                            {% endif %}
+                                        </form>
+                                    </div>
+                                </div>
+                                <small class="text-datk-50">Enter a valid image URL (JPG, PNG, GIF, etc.)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Features Section -->
+        <section class="py-5 bg-light">
+            <div class="py-4">
+                <h2 class="text-center mb-5">Why Choose Our Image Uploader</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <h3 class="h5">Lightning Fast</h3>
+                                <p class="text-muted">Images load instantly with no waiting time or processing delays.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3 class="h5">Secure</h3>
+                                <p class="text-muted">Your images are processed in your browser with no server storage.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <h3 class="h5">Responsive</h3>
+                                <p class="text-muted">Works perfectly on all devices from smartphones to desktop computers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endblock content %}
+    {% block footer %}
+        {% include "layout/footer.html" %}
+    </div>
+{% endblock footer %}
+{% block script %}
+    <script>
+    $(document).ready(function() {
+        $("#initializeBtn").click(function() {
+            $.ajax({
+                url: "{% url 'upload:initialize' %}",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    if(response.status === "success") {
+                        $(".url_section").html($(response.html).find(".url_section").html());
+    
+                        // URL 변경 없이 브라우저 히스토리에 상태 추가 (선택사항)
+                        // history.pushState({}, "", "{% url 'upload:upload_url' %}");
+                    }
+                },
+                error: function(errorThrown) {
+                    console.error("Error:", errorThrown);
+                }
+            });
+        })
+    });
+    </script>
+{% endblock script %}
