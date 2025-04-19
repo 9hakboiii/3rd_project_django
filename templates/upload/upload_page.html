@@ -42,18 +42,26 @@
                                     <span class="input-group-text">
                                         <i class="fas fa-link"></i>
                                     </span>
-                                    <input type="url"
-                                           id="imageUrl"
-                                           class="form-control form-control-lg"
-                                           placeholder="https://example.com/image.jpg"
-                                           required>
-                                    <button id="uploadBtn"
-                                            class="btn btn-primary btn-lg btn-upload"
-                                            type="button">
-                                        <i class="fas fa-upload me-2"></i>Upload
-                                    </button>
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <button id="uploadBtn"
+                                                class="btn btn-primary btn-lg btn-upload"
+                                                type="submit">
+                                            <i class="fas fa-upload me-2"></i>Upload
+                                        </button>
+                                    </form>
                                 </div>
-                                <small class="text-white-50">Enter a valid image URL (JPG, PNG, GIF, etc.)</small>
+                                <div class="row">
+                                    {% for content in contents %}
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card">
+                                                <img src="{{ content.url_image.url }}" class="card-img-top" alt="업로드된 이미지">
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <small class="text-datk-50">Enter a valid image URL (JPG, PNG, GIF, etc.)</small>
                             </div>
                         </div>
                     </div>
