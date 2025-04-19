@@ -7,6 +7,7 @@ app_name = "upload"
 
 urlpatterns = [
     path("upload/", views.upload_url, name="upload_url"),
+    path("initialize/", views.initialize, name="initialize"),
 ]
 
 # 개발 환경에서 미디어 파일 제공
