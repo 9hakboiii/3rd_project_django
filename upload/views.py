@@ -7,6 +7,7 @@ from .forms import URLImageForm
 
 def upload_url(request):
     last_uploaded_image = None
+    is_upload = False
 
     if request.method == "POST":
         form = URLImageForm(request.POST)
@@ -28,11 +29,18 @@ def upload_url(request):
             last_uploaded_image = content
 
             # return redirect("upload:upload_url")  # 성공 후 같은 페이지로 리다이렉트
+
+            # 이미지를 업로드 하면 분석, 삭제 버튼이 생성되도록 함
+            is_upload = True
     else:
         form = URLImageForm()
 
     return render(
         request,
         "upload/upload_page.html",
-        {"form": form, "last_uploaded_image": last_uploaded_image},
+        {
+            "form": form,
+            "last_uploaded_image": last_uploaded_image,
+            "is_upload": is_upload,
+        },
     )
