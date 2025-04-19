@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
+from django.http import JsonResponse
 from urllib import request as urllib_request
 from upload.models import Content
 from .forms import URLImageForm
+from django.template.loader import render_to_string
 
 
 def upload_url(request):
@@ -44,3 +46,20 @@ def upload_url(request):
             "is_upload": is_upload,
         },
     )
+
+
+def initialize(request):
+
+    if request.method == "POST":
+
+        form = URLImageForm()
+        context = {
+            "form": form,
+            "last_uploaded_image": None,
+            "is_upload": False,
+        }
+
+        html = render_to_string("upload/upload_page.html", context, request=request)
+        return JsonResponse({"status": "success", "html": html})
+
+    return JsonResponse({"status": "error"}, status=400)
