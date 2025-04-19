@@ -61,11 +61,24 @@
                                               class="mt-3 d-flex justify-content-center">
                                             {% csrf_token %}
                                             {{ form.as_p }}
-                                            <button id="uploadBtn"
-                                                    class="btn btn-primary btn-lg btn-upload ml-2"
-                                                    type="submit">
-                                                <i class="fas fa-upload me-2"></i>Upload
-                                            </button>
+                                            {% if not is_upload %}
+                                                <button id="uploadBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                        type="submit">
+                                                    <i class="fas fa-upload me-2"></i>Upload
+                                                </button>
+                                            {% else %}
+                                                <button id="analysisBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                        type="#">
+                                                    <i class="bi bi-search"></i>Analysis
+                                                </button>
+                                                <button id="analysisBtn"
+                                                        class="btn btn-danger primary btn-lg btn-upload ml-3"
+                                                        type="#">
+                                                    <i class="bi bi-arrow-clockwise"></i>initialize
+                                                </button>
+                                            {% endif %}
                                         </form>
                                     </div>
                                 </div>
