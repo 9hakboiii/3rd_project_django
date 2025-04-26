@@ -7,8 +7,10 @@
     <div class="d-flex flex-column vh-100 justify-content-between">
     {% endblock navi %}
     {% block content %}
+        <!-- limit_exceeded 경고 -->
+        {% comment %} {% if limit_exceeded %}<script>alert("폰트 추출 기회를 모두 소진하셨습니다!");</script>{% endif %} {% endcomment %}
         <!-- Hero Section -->
-        <section class="url_section py-5">
+        <section class="url_section py-5 hero-section">
             <div class="text-center py-4">
                 <h1 class="display-4 fw-bold mb-4">Upload Your Images Instantly</h1>
                 <p class="lead mb-5">Upload an image and check out the font of your text!</p>
@@ -39,7 +41,7 @@
                         <div class="card shadow">
                             <div class="card-body p-4">
                                 <div class="input-group mb-3">
-                                    <!--uploaded_image_section-->
+                                    <!--이미지 표시 섹션-->
                                     {% if last_uploaded_image %}
                                         <div id="imageContainer">
                                             <div class="row justify-content-center">
@@ -47,7 +49,8 @@
                                                     <div class="card">
                                                         <img src="{{ last_uploaded_image.url_image.url }}"
                                                              alt="업로드된 이미지"
-                                                             class="card-image-top ">
+                                                             class="card-image-top"
+                                                             {% if last_uploaded_image.is_nonmember %}data-nonmember="true"{% endif %}>
                                                     </div>
                                                 </div>
                                             </div>
@@ -65,27 +68,45 @@
                                             {% csrf_token %}
                                             {{ form.as_p }}
                                             {% if not is_upload %}
+                                                <!-- Upload 버튼: limit_exceeded 시 disabled -->
                                                 <button id="uploadBtn"
                                                         class="btn btn-danger primary btn-lg btn-upload ml-2"
-                                                        type="submit">
+                                                        type="submit"
+                                                        {% if limit_exceeded %}disabled{% endif %}>
                                                     <i class="fas fa-upload me-2"></i>Upload
                                                 </button>
                                             {% else %}
-                                                <button id="analysisBtn"
-                                                        class="btn btn-danger primary btn-lg btn-upload ml-2"
-                                                        type="button">
-                                                    <i class="bi bi-search"></i>Analysis
-                                                </button>
-                                                <button id="initializeBtn"
-                                                        class="btn btn-danger primary btn-lg btn-upload ml-3"
-                                                        type="button">
-                                                    <i class="bi bi-arrow-clockwise"></i>Initialize
-                                                </button>
+                                                {% if last_uploaded_image %}
+                                                    <!-- Analysis & Initialize 버튼 -->
+                                                    {% if last_uploaded_image.is_nonmember %}
+                                                        <!--비회원 이미지 처리-->
+                                                        <button id="analysisBtn"
+                                                                class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                                type="button"
+                                                                data-id="{{ last_uploaded_image.id }}"
+                                                                data-nonmember="true">
+                                                            <i class="bi bi-search mr-1"></i>Analysis
+                                                        </button>
+                                                    {% else %}
+                                                        <!--회원 이미지 처리-->
+                                                        <button id="analysisBtn"
+                                                                class="btn btn-danger primary btn-lg btn-upload ml-2"
+                                                                type="button"
+                                                                data-id="{{ last_uploaded_image.id }}">
+                                                            <i class="bi bi-search mr-1"></i>Analysis
+                                                        </button>
+                                                    {% endif %}
+                                                    <button id="initializeBtn"
+                                                            class="btn btn-danger primary btn-lg btn-upload ml-3"
+                                                            type="button">
+                                                        <i class="bi bi-arrow-clockwise"></i>Initialize
+                                                    </button>
+                                                {% endif %}
                                             {% endif %}
                                         </form>
                                     </div>
                                 </div>
-                                <small class="text-datk-50">Enter a valid image URL (JPG, PNG, GIF, etc.)</small>
+                                <small class="text-datk-50">남은 업로드 기회: {{ remaining }}</small>
                             </div>
                         </div>
                     </div>
@@ -139,6 +160,7 @@
     </div>
 {% endblock footer %}
 {% block script %}
+    {% comment %}분석, 초기화 jquery 로직 {% endcomment %}
     <script>
     $(document).ready(function() {
         $("#initializeBtn").click(function() {
