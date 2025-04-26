@@ -135,3 +135,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # AUTH_USER_MODEL
 AUTH_USER_MODEL = "accounts.User"
+
+# SESSION_ID
+UPLOAD_SESSION_ID = "upload"
