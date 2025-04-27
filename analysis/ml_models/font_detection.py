@@ -15,7 +15,6 @@ from collections import OrderedDict
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.models import load_model
 
 
 
@@ -152,7 +151,12 @@ if __name__ == "__main__":
         args.poly = True
 
     # load DeepFont net
-    deepfont = load_model('deepfont_model.h5')
+    interpreter = tf.lite.Interpreter(model_path='deepfont_model.tflite')
+    interpreter.allocate_tensors()
+
+    # 입력 및 출력 텐서 정보 가져오기
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
 
     for subdir, dirs, files in os.walk(samples_folder):
         for f in files:
@@ -187,14 +191,20 @@ if __name__ == "__main__":
                 bottom = int(max(bbox[2][1], bbox[3][1]))
                 left = int(min(bbox[0][0], bbox[3][0]))
                 right = int(max(bbox[1][0], bbox[2][0]))
-
                 cropped_text = origin_img[top:bottom, left:right]
                 cropped_text = preprocess(cropped_text)
                 cropped_text_array = img_to_array(cropped_text)
                 data = []
                 data.append(cropped_text_array)
-                data = np.asarray(data, dtype="float") / 255.0
-                y = deepfont.predict(data)
+                data = np.asarray(data, dtype="float32") / 255.0  # float32로 변환
+                
+                # 입력 텐서에 데이터 설정
+                interpreter.set_tensor(input_details[0]['index'], data)
+                # 추론 실행
+                interpreter.invoke()
+                # 출력 텐서에서 결과 가져오기
+                y = interpreter.get_tensor(output_details[0]['index'])
+                
                 labels.append(label_list[np.argmax(y[0], axis=-1)])
                 #labels.append("<font>")
                 

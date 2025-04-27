@@ -257,3 +257,9 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/pycharm
 /.idea/
 /.env.prod
+
+# font_detection 
+deepfont_model_normal.h5
+deepfont_model.tflite
+samples
+result
