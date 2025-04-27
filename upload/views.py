@@ -110,6 +110,14 @@ def initialize(request):
 
     if request.method == "POST":
 
+        # 세션에서 비회원 업로드 기록(dict) 가져오기
+        nonmember_dict = request.session.get(settings.UPLOAD_SESSION_ID, {})
+
+        # 사용한 횟수, 남은 횟수 계산
+        used_count = len(nonmember_dict)
+        remaining = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+        limit_exceeded = remaining <= 0
+
         # 세션 기록 삭제
         # request.session[settings.UPLOAD_SESSION_ID] = {}
         # request.session.modified = True
@@ -119,8 +127,8 @@ def initialize(request):
             "form": URLImageForm(),
             "last_uploaded_image": None,
             "is_upload": False,
-            "remaining": MAX_NONMEMBER_UPLOADS,
-            "limit_exceeded": False,
+            "remaining": remaining,  # 계산된 실제 남은 횟수 사용
+            "limit_exceeded": limit_exceeded,
         }
 
         html = render_to_string("upload/upload_page.html", context, request=request)

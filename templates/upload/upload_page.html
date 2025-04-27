@@ -106,7 +106,11 @@
                                         </form>
                                     </div>
                                 </div>
-                                <small class="text-datk-50">남은 업로드 기회: {{ remaining }}</small>
+                                {% if last_uploaded_image.is_nonmember %}
+                                    <small class="text-datk-50">남은 업로드 기회: {{ remaining }}</small>
+                                {% else %}
+                                    <small class="text-datk-50">이미지를 URL을 업로드 하세요! (JPG, PNG, GIF, etc.)</small>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
