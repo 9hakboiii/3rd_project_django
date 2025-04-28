@@ -22,8 +22,8 @@ def upload_url(request):
 
     # 사용한 횟수, 남은 횟수 계산
     used_count = len(nonmember_dict)
-    remaining = max(0, MAX_NONMEMBER_UPLOADS - used_count)
-    limit_exceeded = remaining <= 0
+    coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+    limit_exceeded = coin <= 0
 
     if request.method == "POST" and form.is_valid():
         image_url = form.cleaned_data["url"]
@@ -39,7 +39,7 @@ def upload_url(request):
                     "form": form,
                     "last_uploaded_image": None,
                     "is_upload": False,
-                    "remaining": remaining,
+                    "coin": coin,
                     "limit_exceeded": True,
                 },
             )
@@ -86,8 +86,8 @@ def upload_url(request):
             # 업로드 후 다시 사용한 횟수/남은 횟수 갱신
             nonmember_dict = request.session.get(settings.UPLOAD_SESSION_ID, {})
             used_count = len(nonmember_dict)
-            remaining = max(0, MAX_NONMEMBER_UPLOADS - used_count)
-            limit_exceeded = remaining <= 0
+            coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+            limit_exceeded = coin <= 0
 
         except Exception as e:
             print(f"업로드 중 오류가 발생했습니다: {e}")
@@ -100,7 +100,7 @@ def upload_url(request):
             "form": form,
             "last_uploaded_image": last_uploaded_image,
             "is_upload": is_upload,
-            "remaining": remaining,
+            "coin": coin,
             "limit_exceeded": limit_exceeded,
         },
     )
@@ -115,8 +115,8 @@ def initialize(request):
 
         # 사용한 횟수, 남은 횟수 계산
         used_count = len(nonmember_dict)
-        remaining = max(0, MAX_NONMEMBER_UPLOADS - used_count)
-        limit_exceeded = remaining <= 0
+        coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+        limit_exceeded = coin <= 0
 
         # 세션 기록 삭제
         # request.session[settings.UPLOAD_SESSION_ID] = {}
@@ -127,7 +127,7 @@ def initialize(request):
             "form": URLImageForm(),
             "last_uploaded_image": None,
             "is_upload": False,
-            "remaining": remaining,  # 계산된 실제 남은 횟수 사용
+            "coin": coin,  # 계산된 실제 남은 횟수 사용
             "limit_exceeded": limit_exceeded,
         }
 

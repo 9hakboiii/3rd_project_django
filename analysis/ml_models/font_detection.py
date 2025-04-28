@@ -115,6 +115,8 @@ if __name__ == "__main__":
     parser.add_argument('--refine', default=False, action='store_true', help='enable link refiner')
     parser.add_argument('--refiner_model', default='text/craft_refiner_CTW1500.pth', type=str,
                         help='pretrained refiner model')
+    # --image 인수 추가
+    parser.add_argument('--image', type=str, help='specific image file to process')
 
     args = parser.parse_args()
     # load text detection net
@@ -158,10 +160,18 @@ if __name__ == "__main__":
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
-    for subdir, dirs, files in os.walk(samples_folder):
-        for f in files:
-            img_path = os.path.join(subdir, f)
+    # 처리할 파일 목록 생성
+    if args.image:
+        # 특정 이미지만 처리
+        files_to_process = [os.path.join(samples_folder, args.image)]
+    else:
+        # 모든 이미지 처리 (기존 방식)
+        files_to_process = []
+        for subdir, dirs, files in os.walk(samples_folder):
+            for f in files:
+                files_to_process.append(os.path.join(subdir, f))
 
+        for img_path in files_to_process:           
             # load data
             image = imgproc.loadImage(img_path)
             origin_img = cv2.imread(img_path)
