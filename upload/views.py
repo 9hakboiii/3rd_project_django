@@ -22,7 +22,11 @@ def upload_url(request):
 
     # 사용한 횟수, 남은 횟수 계산
     used_count = len(nonmember_dict)
-    coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+
+    # 게임에서 얻은 추가 코인 반영
+    additional_coin = request.session.get('additional_coin', 0)
+
+    coin = max(0, MAX_NONMEMBER_UPLOADS - used_count + additional_coin)
     limit_exceeded = coin <= 0
 
     if request.method == "POST" and form.is_valid():
@@ -115,7 +119,11 @@ def initialize(request):
 
         # 사용한 횟수, 남은 횟수 계산
         used_count = len(nonmember_dict)
-        coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+
+        # 게임에서 얻은 추가 코인 반영
+        additional_coin = request.session.get('additional_coin', 0)
+
+        coin = max(0, MAX_NONMEMBER_UPLOADS - used_count + additional_coin)
         limit_exceeded = coin <= 0
 
         # 세션 기록 삭제
