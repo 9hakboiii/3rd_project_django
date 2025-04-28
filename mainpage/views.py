@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from upload.views import upload_url
 
 
 # Create your views here.

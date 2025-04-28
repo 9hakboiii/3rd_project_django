@@ -18,8 +18,10 @@
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Analyze</a>
                 <a href="#"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Game</a>
-                <a href="#"
-                   class="border border-danger bg-white text-dark px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">Your Coin: {{ coin }}</a>
+                {% if not user.is_authenticated %}
+                    <a href="#"
+                       class="border border-danger bg-white text-dark px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">Your Coin: {{ coin }}</a>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <a href="{% url 'accounts:logout_user' %}"
                        class="bg-youtube text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700"><i class="bi bi-person-circle mr-1"></i>{{ user.username }}</a>
