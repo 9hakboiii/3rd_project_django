@@ -42,23 +42,28 @@
                             <div class="card-body p-4">
                                 <div class="input-group mb-3">
                                     <!--이미지 표시 섹션-->
-                                    {% if last_uploaded_image %}
-                                        <div id="imageContainer">
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-4">
-                                                    <div class="card">
-                                                        <img src="{{ last_uploaded_image.url_image.url }}"
-                                                             alt="업로드된 이미지"
-                                                             class="card-image-top"
-                                                             {% if last_uploaded_image.is_nonmember %}data-nonmember="true"{% endif %}>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-6">
+                                            {% if last_uploaded_image %}
+                                                <div id="imageContainer" class="mb-3">
+                                                    <div class="card shadow">
+                                                        <div class="card-body p-2 text-center">
+                                                            <img id="displayedImage"
+                                                                 src="{{ last_uploaded_image.url_image.url }}"
+                                                                 alt="업로드된 이미지"
+                                                                 class="card-image-top"
+                                                                 {% if last_uploaded_image.is_nonmember %}data-nonmember="true"{% endif %}>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div id="analysisResults" style="display: none">
+                                                <!-- 분석 결과가 여기에 표시됩니다 -->
                                             </div>
                                         </div>
-                                    {% endif %}
-                                    {% comment %} <span class="input-group-text">
-                                        <i class="fas fa-link"></i>
-                                    </span> {% endcomment %}
+                                    </div>
                                     <!--image_form-->
                                     <div class="container text-center">
                                         <form method="post"
@@ -106,7 +111,11 @@
                                         </form>
                                     </div>
                                 </div>
-                                <small class="text-datk-50">남은 업로드 기회: {{ remaining }}</small>
+                                {% if last_uploaded_image.is_nonmember %}
+                                    <small class="text-datk-50">남은 코인: {{ coin }}개</small>
+                                {% else %}
+                                    <small class="text-datk-50">이미지를 URL을 업로드 하세요! (JPG, PNG, GIF, etc.)</small>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -160,9 +169,9 @@
     </div>
 {% endblock footer %}
 {% block script %}
-    {% comment %}분석, 초기화 jquery 로직 {% endcomment %}
     <script>
     $(document).ready(function() {
+        // 초기화 버튼 클릭 이벤트 핸들러
         $("#initializeBtn").click(function() {
             $.ajax({
                 url: "{% url 'upload:initialize' %}",
@@ -184,5 +193,82 @@
             });
         })
     });
+
+    // upload_page.html의 스크립트 부분에 추가
+    $(document).ready(function() {
+        // 분석 버튼 클릭 이벤트 핸들러
+        $("#analysisBtn").click(function() {
+            var imageId = $(this).data('id');
+            var isNonmember = $(this).data('nonmember') || false;
+            
+            // 로딩 메시지 표시
+            $("#analysisResults").html('<div class="alert alert-info text-center">이미지에서 폰트를 분석 중입니다. 잠시만 기다려주세요...</div>').show();
+            
+            // 요청 데이터 준비
+            var requestData = {
+                csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val()
+            };
+            
+            // 비회원 이미지인 경우 image_id 추가
+            if (isNonmember) {
+                requestData.image_id = imageId;
+            }
+            
+            // AJAX 요청 전송
+            $.ajax({
+                url: "{% url 'analysis:analyze_image' %}",
+                type: "POST",
+                data: requestData,
+                success: function(response) {
+                    if (response.success) {
+                        // 분석 결과 표시
+                        var html = '<div class="card shadow">' +
+                                   '<div class="card-header bg-light"><h5 class="mb-0">분석 결과</h5></div>' +
+                                   '<div class="card-body">' +
+                                   '<div class="alert alert-success">' +
+                                   '<h4>주요 폰트: ' + response.font_name + '</h4>' +
+                                   '<p>' + response.font_info + '</p>' +
+                                   '</div>';
+                        
+                        // 폰트 목록 추가
+                        html += '<h5>감지된 모든 폰트:</h5><ul class="list-group">';
+                        for (var font in response.all_fonts) {
+                            html += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                                    font + '<span class="badge bg-primary rounded-pill">' + 
+                                    response.all_fonts[font] + '</span></li>';
+                        }
+                        html += '</ul></div></div>';
+                        
+                        $("#analysisResults").html(html).show();
+                        
+                        // 분석된 이미지로 업데이트
+                        if (response.analyzed_image_url) {
+                            $("#displayedImage").attr("src", response.analyzed_image_url);
+                        }
+                    } else {
+                        // 오류 메시지 표시
+                        $("#analysisResults").html(
+                            '<div class="card shadow">' +
+                            '<div class="card-header bg-light text-danger"><h5 class="mb-0">분석 실패</h5></div>' +
+                            '<div class="card-body">' +
+                            '<div class="alert alert-danger">' +
+                            '<p>' + response.error + '</p>' +
+                            '</div></div></div>'
+                        ).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // 오류 표시
+                    $("#analysisResults").html(
+                        '<div class="alert alert-danger">' +
+                        '<h4>요청 실패</h4>' +
+                        '<p>분석 중 오류가 발생했습니다: ' + error + '</p>' +
+                        '</div>'
+                    );
+                }
+            });
+        });
+    });
+
     </script>
 {% endblock script %}

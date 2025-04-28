@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("mainpage.urls")),
     path("accounts/", include("accounts.urls")),
     path("upload/", include("upload.urls")),
+    path('analysis/', include('analysis.urls', namespace='analysis')),
 ]
 
 if settings.DEBUG:
