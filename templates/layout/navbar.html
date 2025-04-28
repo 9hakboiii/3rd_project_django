@@ -16,9 +16,9 @@
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Home</a>
                 <a href="{% url 'upload:upload_url' %}"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Analyze</a>
-                <a href="{% url 'game:rps' %}"
+                <a href="{% url 'game:rsp_game' %}"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">rsp Game</a>
-                <a href="{% url 'game:lotto' %}"
+                <a href="{% url 'game:lotto_game' %}"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">lotto Game</a>
                 {% if not user.is_authenticated %}
                     <a href="#"

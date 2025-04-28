@@ -3,11 +3,11 @@ from django.http import JsonResponse
 import random
 from django.conf import settings
 
-def rps_game(request):
+def rsp_game(request):
     """가위바위보 게임 뷰"""
     context = {}
     
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # AJAX 요청 처리
         user_choice = request.POST.get('choice')
         choices = ['rock', 'paper', 'scissors']
@@ -42,13 +42,13 @@ def rps_game(request):
     
     # GET 요청 - 게임 페이지 표시
     context['coin'] = get_remaining_coin(request)
-    return render(request, 'game/rps.html', context)
+    return render(request, 'game/rsp_game.html', context)
 
 def lotto_game(request):
     """로또 번호 추첨 게임 뷰"""
     context = {}
     
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # 사용자 번호 6개 받기
         user_numbers = []
         for i in range(1, 7):
@@ -66,23 +66,28 @@ def lotto_game(request):
         # 맞춘 번호 개수
         matched = len(set(user_numbers) & set(lotto_numbers))
         
-        # 승패 결정 (3개 이상 맞추면 승리로 간주)
-        won = matched >= 3
-        
-        if won:
-            increase_coin(request)
+        # 맞춘 개수에 따라 코인 증가
+        if matched >= 6:
+            increase_coins(request, 5)
+        elif matched == 5:
+            increase_coins(request, 4)
+        elif matched == 4:
+            increase_coins(request, 3)
+        elif matched == 3:
+            increase_coins(request, 2)
+        elif matched == 2:
+            increase_coins(request, 1)
         
         return JsonResponse({
             'user_numbers': user_numbers,
             'lotto_numbers': lotto_numbers,
             'matched': matched,
-            'won': won,
             'coin': get_remaining_coin(request)
         })
     
     # GET 요청 - 게임 페이지 표시
     context['coin'] = get_remaining_coin(request)
-    return render(request, 'game/lotto.html', context)
+    return render(request, 'game/lotto_game.html', context)
 
 def get_remaining_coin(request):
     """현재 남은 코인 개수 계산"""
@@ -99,5 +104,12 @@ def increase_coin(request):
     """게임에서 승리했을 때 코인 증가"""
     additional_coin = request.session.get('additional_coin', 0)
     additional_coin += 1
+    request.session['additional_coin'] = additional_coin
+    request.session.modified = True
+
+def increase_coins(request, amount):
+    """게임에서 여러 코인을 획득할 때 사용"""
+    additional_coin = request.session.get('additional_coin', 0)
+    additional_coin += amount
     request.session['additional_coin'] = additional_coin
     request.session.modified = True

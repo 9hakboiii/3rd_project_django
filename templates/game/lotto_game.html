@@ -1,0 +1,204 @@
+{% extends 'layout/base.html' %}
+{% block head %}
+    {% include "upload/head.html" %}
+{% endblock head %}
+{% block navi %}
+    {% include "layout/navbar.html" %}
+    <div class="d-flex flex-column vh-100 justify-content-between">
+    {% endblock navi %}
+    {% block content %}
+        <div class="container py-5">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0 text-center">로또 번호 추첨 게임</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    <div class="text-center mb-4">
+                        <p>
+                            현재 남은 코인: <span id="coinCount" class="badge bg-success">{{ coin }}</span>
+                        </p>
+                        <p class="text-muted">맞춘 개수에 따라 코인을 획득할 수 있어요!</p>
+                        <p class="small text-muted">6개: 5코인 | 5개: 4코인 | 4개: 3코인 | 3개: 2코인 | 2개: 1코인 | 1개 이하: 0코인</p>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="form-label text-center">내 번호 선택 (1~45 사이 숫자 6개)</div>
+                            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                                {% for i in "123456" %}
+                                    <div class="input-group" style="width: 100px;">
+                                        <input type="number"
+                                               id="number{{ forloop.counter }}"
+                                               class="form-control user-number"
+                                               min="1"
+                                               max="45"
+                                               placeholder="{{ forloop.counter }}번">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-4">
+                        <button id="drawBtn" class="btn btn-danger">
+                            <i class="fas fa-random"></i> 번호 추첨하기
+                        </button>
+                        <button id="resetBtn" class="btn btn-outline-danger">
+                            <i class="fas fa-redo"></i> 초기화
+                        </button>
+                    </div>
+                    <div id="result" class="text-center mt-4" style="display: none;">
+                        <!-- 결과가 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock content %}
+    {% block footer %}
+        {% include "layout/footer.html" %}
+    </div>
+{% endblock footer %}
+{% block script %}
+    <script>
+    $(document).ready(function() {
+        // CSRF 토큰 설정
+        $.ajaxSetup({
+            headers: {
+                "X-CSRFToken": $('input[name=csrfmiddlewaretoken]').val(),
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        // 번호 입력 제한 (1~45)
+        $('.user-number').on('input', function() {
+            var val = parseInt($(this).val());
+            if (val > 45) $(this).val(45);
+            if (val < 1) $(this).val(1);
+        });
+        
+        // 중복 번호 체크
+        $('.user-number').on('change', function() {
+            var currentVal = parseInt($(this).val());
+            var duplicateFound = false;
+            
+            $('.user-number').not(this).each(function() {
+                var otherVal = parseInt($(this).val());
+                if (!isNaN(otherVal) && otherVal === currentVal) {
+                    duplicateFound = true;
+                    return false;
+                }
+            });
+            
+            if (duplicateFound) {
+                alert('중복된 번호는 선택할 수 없습니다.');
+                $(this).val('');
+                $(this).focus();
+            }
+        });
+
+        // 추첨 버튼 클릭 이벤트
+        $('#drawBtn').click(function() {
+            // 유효성 검사
+            var userNumbers = [];
+            var valid = true;
+            
+            $('.user-number').each(function() {
+                var val = parseInt($(this).val());
+                if (isNaN(val) || val < 1 || val > 45) {
+                    valid = false;
+                    return false;
+                }
+                userNumbers.push(val);
+            });
+            
+            if (!valid || userNumbers.length !== 6) {
+                alert('1~45 사이의 숫자 6개를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 중복 체크
+            if (new Set(userNumbers).size !== userNumbers.length) {
+                alert('중복된 번호가 있습니다. 서로 다른 번호 6개를 입력해주세요.');
+                return;
+            }
+            
+            // AJAX 요청
+            $.ajax({
+                url: "{% url 'game:lotto_game' %}",
+                type: "POST",
+                data: {
+                    'number1': userNumbers[0],
+                    'number2': userNumbers[1],
+                    'number3': userNumbers[2],
+                    'number4': userNumbers[3],
+                    'number5': userNumbers[4],
+                    'number6': userNumbers[5]
+                },
+                success: function(response) {
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+                    
+                    // 결과 표시
+                    var resultHTML = '<h4 class="mb-3">추첨 결과</h4>';
+                    
+                    // 로또 공 표시
+                    resultHTML += '<div class="mb-3"><h5>당첨 번호</h5><div class="d-flex justify-content-center gap-2 mb-3">';
+                    response.lotto_numbers.sort(function(a, b) { return a - b; }).forEach(function(num) {
+                        resultHTML += '<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-weight: bold;">' + num + '</div>';
+                    });
+                    resultHTML += '</div></div>';
+                    
+                    // 내 선택 번호 표시
+                    resultHTML += '<div class="mb-3"><h5>내 선택 번호</h5><div class="d-flex justify-content-center gap-2 mb-3">';
+                    response.user_numbers.sort(function(a, b) { return a - b; }).forEach(function(num) {
+                        // 맞춘 번호는 초록색, 틀린 번호는 회색으로 표시
+                        var bgClass = response.lotto_numbers.includes(num) ? 'bg-success' : 'bg-secondary';
+                        resultHTML += '<div class="rounded-circle ' + bgClass + ' text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-weight: bold;">' + num + '</div>';
+                    });
+                    resultHTML += '</div></div>';
+                    
+                    // 맞춘 개수 및 획득 코인
+                    var coinEarned = 0;
+                    if (response.matched >= 6) coinEarned = 5;
+                    else if (response.matched == 5) coinEarned = 4;
+                    else if (response.matched == 4) coinEarned = 3;
+                    else if (response.matched == 3) coinEarned = 2;
+                    else if (response.matched == 2) coinEarned = 1;
+                    
+                    var alertClass = response.matched >= 2 ? 'alert-success' : 'alert-danger';
+                    
+                    resultHTML += '<div class="alert ' + alertClass + '">';
+                    resultHTML += '<h5 class="alert-heading">' + response.matched + '개 맞췄습니다!</h5>';
+                    
+                    if (coinEarned > 0) {
+                        resultHTML += '<p>축하합니다! ' + coinEarned + '코인을 획득했습니다.</p>';
+                    } else {
+                        resultHTML += '<p>아쉽게도 코인을 획득하지 못했습니다. 다시 도전해보세요!</p>';
+                    }
+                    
+                    resultHTML += '</div>';
+                    
+                    // 코인 개수 업데이트
+                    $('#coinCount').text(response.coin);
+                    
+                    // 결과 표시
+                    $('#result').html(resultHTML).show();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        });
+        
+        // 초기화 버튼 클릭 이벤트
+        $('#resetBtn').click(function() {
+            // 입력 필드 초기화
+            $('.user-number').val('');
+            // 결과 영역 숨기기
+            $('#result').hide();
+        });
+    });
+    </script>
+{% endblock script %}

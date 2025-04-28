@@ -1,0 +1,129 @@
+{% extends 'layout/base.html' %}
+{% block head %}
+    {% include "upload/head.html" %}
+{% endblock head %}
+{% block navi %}
+    {% include "layout/navbar.html" %}
+    <div class="d-flex flex-column vh-100 justify-content-between">
+    {% endblock navi %}
+    {% block content %}
+        <div class="container py-5">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0 text-center">가위바위보 게임</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    <div class="text-center mb-4">
+                        <p>
+                            현재 남은 코인: <span id="coinCount" class="badge bg-success">{{ coin }}</span>
+                        </p>
+                        <p class="text-muted">게임에서 이기면 코인을 하나 얻을 수 있어요!</p>
+                    </div>
+                    <div id="gameControls" class="row mb-4 text-center">
+                        <div class="col-md-4">
+                            <button id="rock" class="btn btn-lg btn-outline-danger choice-btn">
+                                <i class="fas fa-hand-rock"></i> 바위
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="paper" class="btn btn-lg btn-outline-danger choice-btn">
+                                <i class="fas fa-hand-paper"></i> 보
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="scissors" class="btn btn-lg btn-outline-danger choice-btn">
+                                <i class="fas fa-hand-scissors"></i> 가위
+                            </button>
+                        </div>
+                    </div>
+                    <div id="result" class="text-center" style="display: none;">
+                        <!-- 결과 표시 영역 -->
+                    </div>
+                    <div class="text-center mt-3">
+                        <button id="resetBtn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-redo"></i> 다시하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock content %}
+    {% block footer %}
+        {% include "layout/footer.html" %}
+    </div>
+{% endblock footer %}
+{% block script %}
+    <script>
+    $(document).ready(function() {
+        // CSRF 토큰 설정
+        $.ajaxSetup({
+            headers: {
+                "X-CSRFToken": $('input[name=csrfmiddlewaretoken]').val(),
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        // 가위/바위/보 버튼 클릭 이벤트
+        $('.choice-btn').click(function() {
+            var choice = $(this).attr('id');
+            
+            $.ajax({
+                url: "{% url 'game:rsp_game' %}",
+                type: "POST",
+                data: {
+                    'choice': choice
+                },
+                success: function(response) {
+                    // 결과 표시
+                    var resultHTML = '';
+                    
+                    if(response.won) {
+                        resultHTML = '<div class="alert alert-success">승리! 코인 1개를 획득했습니다!</div>';
+                    } else if(response.result === "무승부") {
+                        resultHTML = '<div class="alert alert-warning">무승부입니다.</div>';
+                    } else {
+                        resultHTML = '<div class="alert alert-danger">패배했습니다. 다시 도전하세요!</div>';
+                    }
+                    
+                    resultHTML += '<p>컴퓨터의 선택: ' + getChoiceInKorean(response.computer_choice) + '</p>';
+                    resultHTML += '<p>현재 코인: ' + response.coin + '개</p>';
+                    
+                    // 결과 표시 및 코인 갱신
+                    $('#result').html(resultHTML).show();
+                    $('#coinCount').text(response.coin);
+                    
+                    // 게임 끝난 후 다시하기 버튼 표시
+                    $('#resetBtn').show();
+                    // 선택 버튼들 비활성화
+                    $('.choice-btn').prop('disabled', true);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        });
+        
+        // 다시하기 버튼 클릭 이벤트
+        $('#resetBtn').click(function() {
+            // 결과 영역 숨기기
+            $('#result').hide();
+            // 선택 버튼 활성화
+            $('.choice-btn').prop('disabled', false);
+            // 다시하기 버튼 숨기기
+            $(this).hide();
+        });
+        
+        // 선택을 한글로 변환하는 함수
+        function getChoiceInKorean(choice) {
+            switch(choice) {
+                case 'rock': return '바위';
+                case 'paper': return '보';
+                case 'scissors': return '가위';
+                default: return choice;
+            }
+        }
+    });
+    </script>
+{% endblock %}
