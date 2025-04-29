@@ -5,7 +5,6 @@
         <div class="flex justify-between h-16">
             <div class="flex items-center">
                 <div class="flex-shrink-0 flex items-center">
-                    <i class="fab fa-youtube text-youtube text-3xl mr-2"></i>
                     <a class="navar-brand" href="{% url 'main:home' %}">
                         <span class="text-xl font-bold text-dark">Thumb<span class="text-youtube">Trend</span></span>
                     </a>
@@ -16,11 +15,11 @@
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Home</a>
                 <a href="{% url 'upload:upload_url' %}"
                    class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">Analyze</a>
-                <a href="{% url 'game:rsp_game' %}"
-                   class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">rsp Game</a>
-                <a href="{% url 'game:lotto_game' %}"
-                   class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">lotto Game</a>
                 {% if not user.is_authenticated %}
+                    <a href="{% url 'game:rsp_game' %}"
+                       class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">rsp Game</a>
+                    <a href="{% url 'game:lotto_game' %}"
+                       class="text-dark hover:text-youtube px-3 py-2 text-sm font-medium">lotto Game</a>
                     <a href="#"
                        class="border border-danger bg-white text-dark px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">Your Coin: {{ coin }}</a>
                 {% endif %}

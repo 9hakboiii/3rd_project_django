@@ -11,7 +11,6 @@ from django.conf import settings
 # 비회원 최대 업로드 횟수 상수
 MAX_NONMEMBER_UPLOADS = 5
 
-
 def upload_url(request):
     form = URLImageForm(request.POST or None)
     last_uploaded_image = None
@@ -90,7 +89,8 @@ def upload_url(request):
             # 업로드 후 다시 사용한 횟수/남은 횟수 갱신
             nonmember_dict = request.session.get(settings.UPLOAD_SESSION_ID, {})
             used_count = len(nonmember_dict)
-            coin = max(0, MAX_NONMEMBER_UPLOADS - used_count)
+            additional_coin = request.session.get('additional_coin', 0)  # 이 줄 추가
+            coin = max(0, MAX_NONMEMBER_UPLOADS - used_count + additional_coin)  # additional_coin 추가
             limit_exceeded = coin <= 0
 
         except Exception as e:
