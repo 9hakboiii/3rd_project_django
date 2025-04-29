@@ -1,23 +1,89 @@
+absl-py==2.2.2
+asgiref==3.5.2
+astunparse==1.6.3
+backports.zoneinfo @ file:///C:/Users/BUILDE~1/AppData/Local/Temp/abs_29zz4uumbw/croots/recipe/backports.zoneinfo_1661287541232/work
+beautifulsoup4==4.13.4
+cachetools==5.5.2
 certifi==2020.12.5
+charset-normalizer==3.4.1
+click==8.1.8
+colorama==0.4.6
+cssbeautifier==1.15.4
 cycler==0.10.0
 decorator==4.4.2
+diffimg==0.2.3
+Django==4.1
+djlint==1.35.2
+EditorConfig==0.17.0
+flatbuffers==25.2.10
+gast==0.4.0
+google-auth==2.39.0
+google-auth-oauthlib==1.0.0
+google-pasta==0.2.0
+grpcio==1.70.0
+h5py==3.1.0
+html-tag-names==0.1.2
+html-void-elements==0.1.0
+idna==3.10
 imageio==2.9.0
+importlib_metadata==8.5.0
+jsbeautifier==1.15.4
+json5==0.12.0
+keras==2.13.1
+keras-nightly==2.5.0.dev2021032900
+Keras-Preprocessing==1.1.2
 kiwisolver==1.3.1
-matplotlib==3.4.1
+libclang==18.1.1
+Markdown==3.7
+MarkupSafe==2.1.5
+matplotlib @ file:///D:/bld/matplotlib-suite_1617212937240/work
 networkx==2.5.1
-numpy==1.20.2
-opencv-contrib-python==4.5.1.48
-Pillow==8.2.0
+numpy==1.24.3
+oauthlib==3.2.2
+opencv-python==4.11.0.86
+opt-einsum==3.3.0
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work
+pathspec==0.12.1
+Pillow==7.0.0
+ply @ file:///home/conda/feedstock_root/build_artifacts/ply_1712242996588/work
+protobuf==3.20.3
+pyasn1==0.6.1
+pyasn1_modules==0.4.2
 pyparsing==2.4.7
+PyQt5-sip @ file:///D:/bld/pyqt-split_1695418153721/work/pyqt_sip
 python-dateutil==2.8.1
 PyWavelets==1.1.1
+PyYAML==6.0.2
+regex==2024.11.6
+requests==2.32.3
+requests-oauthlib==2.0.0
+rsa==4.9.1
 scikit-image==0.18.1
-scipy==1.6.3
+scipy==1.10.1
+sip==4.19.13
 six==1.15.0
+soupsieve==2.7
+sqlparse @ file:///C:/b/abs_88361ub_qu/croot/sqlparse_1690904577514/work
+tensorboard==2.13.0
+tensorboard-data-server==0.7.2
+tensorboard-plugin-wit==1.8.1
+tensorflow==2.13.0
+tensorflow-estimator==2.13.0
+tensorflow-intel==2.13.0
+tensorflow-io-gcs-filesystem==0.31.0
+termcolor==1.1.0
 tifffile==2021.4.8
+toml @ file:///home/conda/feedstock_root/build_artifacts/toml_1604308577558/work
+tomli @ file:///home/conda/feedstock_root/build_artifacts/tomli_1727974628237/work
 torch==1.8.1
 torchvision==0.9.1
-typing-extensions==3.7.4.3
+tornado @ file:///D:/bld/tornado_1717722870081/work
+tqdm==4.67.1
+trdg==1.6.0
+typing_extensions==4.5.0
+tzdata @ file:///croot/python-tzdata_1690578112552/work
+urllib3==2.2.3
+Werkzeug==3.0.6
 wincertstore==0.2
-
-tensorflow~=2.5.0
+wrapt==1.12.1
+zipp==3.20.2
